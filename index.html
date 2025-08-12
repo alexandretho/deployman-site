@@ -8,7 +8,7 @@
   <meta name="color-scheme" content="dark light">
   <style>
     :root{
-      --bg: #0a0f1f;
+      --bg: #0a0f1f; /* azul escuro futurista */
       --card: #10172a;
       --muted: #7aa2ff;
       --accent: #00e5ff;
@@ -16,16 +16,18 @@
       --text-dim: #a8b3cf;
       --ring: 0 0 0 2px rgba(0,229,255,.35), 0 0 40px rgba(0,229,255,.15) inset;
     }
-    *{box-sizing:border-box; margin:0; padding:0}
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
     body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
       background: radial-gradient(1200px 600px at 80% -10%, rgba(0,229,255,.18), transparent 60%),
                   radial-gradient(900px 500px at 10% 110%, rgba(96,165,250,.15), transparent 60%),
                   var(--bg);
       color: var(--text);
       line-height: 1.55;
+      letter-spacing:.2px;
     }
-    a{color:var(--muted); text-decoration:none}
+    a{color:var(--muted); text-decoration: none}
     a:hover{color:var(--accent)}
     header{
       position: sticky; top:0; z-index:5;
@@ -38,22 +40,39 @@
     .nav .brand{display:flex; gap:10px; align-items:center; font-weight:700}
     .logo{width:28px; height:28px; border-radius:8px; background: linear-gradient(135deg,var(--muted),var(--accent)); box-shadow: 0 0 20px rgba(122,162,255,.5)}
     .nav a{margin:0 10px; font-weight:600}
-    .hero{padding:72px 0 32px; text-align:center}
-    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background: rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.2); color: var(--accent); font-size:.85rem; font-weight:700}
+
+    .hero{padding:72px 0 32px; display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:center}
+    .hero h1{font-size: clamp(1.8rem, 3.5vw, 3rem); line-height:1.15; margin:0}
+    .hero p{color:var(--text-dim); margin:14px 0 22px}
+
+    .panel{background: linear-gradient(180deg, rgba(16,23,42,.75), rgba(16,23,42,.5)); border:1px solid rgba(122,162,255,.15); border-radius:18px; padding:16px; box-shadow: 0 10px 60px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03)}
     .grid{display:grid; gap:16px}
     .cards{grid-template-columns: repeat(auto-fit, minmax(260px,1fr))}
+
     .card{background: var(--card); border-radius:16px; padding:16px; border:1px solid rgba(122,162,255,.12); position:relative; overflow:hidden}
     .card h3{margin:0 0 8px; font-size:1.05rem}
     .meta{color:var(--text-dim); font-size:.9rem}
+
+    .searchbar{display:flex; gap:10px; align-items:center; background: #0b1328; padding:10px 12px; border-radius:12px; border:1px solid rgba(122,162,255,.2)}
+    input, select{background:#0b1328; color:var(--text); border:1px solid rgba(122,162,255,.2); border-radius:12px; padding:10px 12px; width:100%}
+    .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0)}
+
     section{padding:32px 0}
+    h2{margin:0 0 12px}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background: rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.2); color: var(--accent); font-size:.85rem; font-weight:700}
+
     footer{padding:28px 0 60px; color:var(--text-dim); border-top:1px solid rgba(122,162,255,.15); text-align:center}
     .empty{opacity:.7; text-align:center; padding:18px}
+
+    @media (max-width: 880px){
+      .hero{grid-template-columns: 1fr}
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="wrap nav">
-      <div class="brand"><div class="logo"></div> Deployman</div>
+      <div class="brand"><div class="logo" aria-hidden></div> <span>Deployman</span></div>
       <nav>
         <a href="#posts">Posts</a>
         <a href="#curiosidades">Curiosidades</a>
@@ -65,8 +84,23 @@
 
   <main class="wrap">
     <section class="hero">
-      <h1>DevOps • Tecnologia • Dados • Sec</h1>
-      <div class="pill">Publicação: apenas pelo mantenedor</div>
+      <div>
+        <h1>DevOps • Tecnologia • Dados • Sec</h1>
+        <p>Um hub minimalista para compartilhar <strong>posts</strong>, <strong>curiosidades</strong> e práticas reais de plataformas cloud, Kubernetes/OKD, observabilidade, automação e segurança.</p>
+        <div class="pill">Publicação: apenas pelo mantenedor</div>
+      </div>
+      <div class="panel">
+        <div class="searchbar">
+          <label for="q" class="sr">Buscar</label>
+          <input id="q" placeholder="Buscar por título, tag ou conteúdo…" />
+          <select id="kind">
+            <option value="all">Tudo</option>
+            <option value="post">Posts</option>
+            <option value="curiosidade">Curiosidades</option>
+          </select>
+        </div>
+        <div id="stats" class="meta" style="margin:10px 2px 0"></div>
+      </div>
     </section>
 
     <section id="posts">
@@ -76,21 +110,26 @@
     </section>
 
     <section id="curiosidades">
-      <h2>💡 Curiosidades</h2>
+      <h2>💡 Curiosidades (DevOps/Tech/Dados/Sec)</h2>
       <div id="curiList" class="grid cards"></div>
       <div id="curiEmpty" class="empty" hidden>Nenhuma curiosidade publicada ainda.</div>
     </section>
 
     <section id="sobre">
       <h2>👤 Sobre mim</h2>
-      <div class="card">
-        <p><strong>Alexandre Santos</strong> — DevOps, Kubernetes (OKD4, Rancher), AWS, observabilidade, automação e segurança. Compartilho experiências, guias práticos e notas rápidas.</p>
+      <div class="panel">
+        <p><strong>Alexandre Santos</strong> — DevOps, Kubernetes (OKD4, Rancher), AWS, observabilidade (Dynatrace, Grafana), automação (Terraform, n8n) e segurança. Neste site compartilho experiências do dia a dia, guias práticos e notas rápidas.</p>
+        <ul>
+          <li>🎯 Foco: custo, escalabilidade e confiabilidade.</li>
+          <li>⚙️ Stack que curto: PHP/Node, Postgres/MySQL, Redis, Traefik/Nginx, Keycloak.</li>
+          <li>📚 Extras que agregam: mini-playbooks, checklists e “lab recipes”.</li>
+        </ul>
       </div>
     </section>
 
     <section id="contato">
       <h2>✉️ Contato</h2>
-      <div class="card">
+      <div class="panel">
         <p>Prefere falar direto? <a id="mailto" href="mailto:seuemail@exemplo.com?subject=Contato%20via%20Deployman">Enviar e-mail</a>.</p>
       </div>
     </section>
@@ -98,15 +137,18 @@
 
   <footer>
     <div class="wrap">
-      <div class="meta">© <span id="year"></span> Deployman • Feito com ♥ e GitHub Pages.</div>
+      <div class="meta">© <span id="year"></span> Deployman • Feito com ♥ e GitHub Pages. | <a id="repoLink" target="_blank" rel="noopener">Repositório</a></div>
     </div>
   </footer>
 
   <script>
-    const OWNER = "alexandretho";
-    const REPO  = "deployman-site";
-    const PER_PAGE = 30;
+    // ---------- CONFIG ----------
+    const OWNER = "alexandretho"; // <- edite
+    const REPO  = "deployman-site"; // <- edite
+    const PER_PAGE = 30; // itens por chamada
+    const SITE_EMAIL = "seuemail@exemplo.com"; // contato padrão
 
+    // ---------- Helpers ----------
     const $ = (q)=>document.querySelector(q);
     const el = (tag,cls)=>{ const e=document.createElement(tag); if(cls) e.className=cls; return e };
     const fmtDate = (iso)=> new Date(iso).toLocaleDateString('pt-BR', {year:'numeric',month:'short',day:'2-digit'});
@@ -119,8 +161,13 @@
         url.searchParams.set('state','open');
         url.searchParams.set('labels', lab);
         url.searchParams.set('per_page', PER_PAGE);
+        console.log('[GH-ISSUES]', url.toString());
         const res = await fetch(url, {headers: {"Accept":"application/vnd.github+json"}});
-        if(!res.ok) { console.error(`Erro ao buscar label ${lab}:`, res.status); continue; }
+        if(!res.ok){
+          const msg = `Falha ao buscar issues (label: ${lab}) — status ${res.status}`;
+          console.error(msg);
+          continue;
+        }
         const items = await res.json();
         for(const i of items){ if(i.pull_request) continue; seen.set(i.number, i); }
       }
@@ -129,11 +176,11 @@
 
     function cardForIssue(i){
       const card = el('article','card');
-      const h = el('h3'); h.textContent = i.title;
+      const h = el('h3'); h.textContent = i.title?.replace(/^\[.*?\]\s*/,'') || 'Sem título';
       const meta = el('div','meta');
       const tags = (i.labels||[]).map(l => typeof l === 'string' ? l : l.name).join(', ');
-      meta.textContent = `${fmtDate(i.created_at)} • ${tags}`;
-      const p = el('p'); p.innerHTML = (i.body || '').slice(0, 220) + (i.body && i.body.length>220?'…':'');
+      meta.textContent = `${fmtDate(i.created_at)} • #${i.number} • ${tags}`;
+      const p = el('p'); p.innerHTML = (i.body || '').slice(0, 220).replace(/\n/g,' ') + (i.body && i.body.length>220?'…':'');
       const more = el('a'); more.href = i.html_url; more.target='_blank'; more.rel='noopener'; more.textContent = 'Ler no GitHub';
       card.append(h, meta, p, more);
       return card;
@@ -146,12 +193,26 @@
       issues.forEach(i => container.appendChild(cardForIssue(i)));
     }
 
+    function searchAll(){
+      window.__posts = window.__posts || [];
+      window.__curis = window.__curis || [];
+      const q = ($('#q')?.value || '').toLowerCase();
+      const kind = $('#kind')?.value || 'all';
+      const match = (i)=>{
+        if(kind !== 'all' && !i.labels?.some(l => (typeof l==='string'?l:l.name).toLowerCase() === kind)) return false;
+        const hay = [i.title || '', i.body || '', ...(i.labels||[]).map(l => (typeof l==='string'?l:l.name))].join(' ').toLowerCase();
+        return hay.includes(q);
+      };
+      renderList($('#postsList'), $('#postsEmpty'), window.__posts.filter(match));
+      renderList($('#curiList'), $('#curiEmpty'), window.__curis.filter(match));
+      const stats = $('#stats');
+      if(stats) stats.textContent = `Posts: ${window.__posts.length} • Curiosidades: ${window.__curis.length}`;
+    }
+
     async function boot(){
-      document.getElementById('year').textContent = new Date().getFullYear();
-      const mail = document.getElementById('mailto');
-      if(mail) mail.href = `mailto:${SITE_EMAIL}?subject=Contato%20via%20Deployman`;
-      const repoA = document.getElementById('repoLink');
-      if(repoA) repoA.href = `https://github.com/${OWNER}/${REPO}`;
+      $('#year').textContent = new Date().getFullYear();
+      $('#mailto').href = `mailto:${SITE_EMAIL}?subject=Contato%20via%20Deployman`;
+      $('#repoLink').href = `https://github.com/${OWNER}/${REPO}`;
       try{
         const [posts, curis] = await Promise.all([
           fetchIssuesByLabel(['post','posts']),
@@ -160,12 +221,19 @@
         window.__posts = posts;
         window.__curis = curis;
         searchAll();
+        if(!posts.length && !curis.length){
+          $('#stats').innerHTML = `Nenhum item encontrado. Verifique:<br>• OWNER/REPO corretos<br>• Repositório <strong>público</strong><br>• Issues <strong>abertas</strong> com labels exatas (post/curiosidade)`;
+          $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
+        }
       }catch(e){
-        console.error('Erro no boot:', e);
-        document.querySelector('#postsEmpty').hidden = false; document.querySelector('#curiEmpty').hidden = false;
+        console.error(e);
+        const tip = `Não carregou. Teste este endpoint (troque OWNER/REPO):<br>`+
+          `<code>https://api.github.com/repos/${OWNER}/${REPO}/issues?state=open&labels=curiosidade&per_page=10</code>`;
+        $('#stats').innerHTML = tip;
+        $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
       }
-      document.querySelector('#q')?.addEventListener('input', searchAll);
-      document.querySelector('#kind')?.addEventListener('change', searchAll);
+      $('#q')?.addEventListener('input', searchAll);
+      $('#kind')?.addEventListener('change', searchAll);
     }
     boot();
   </script>
