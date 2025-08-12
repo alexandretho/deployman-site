@@ -16,14 +16,6 @@
     .meta { font-size: 0.85rem; color: #a8b3cf; }
     .empty { opacity: .7; text-align: center; padding: 18px; }
     .content { margin-top: 10px; }
-    .controls { margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; }
-    .controls input { padding: 5px; border-radius: 4px; border: none; }
-    .controls button { padding: 6px 12px; border: none; border-radius: 4px; background: #7aa2ff; color: #fff; cursor: pointer; }
-    .controls button:hover { background: #00e5ff; }
-  .controls{display:flex; gap:10px; align-items:center; background:#0b1328; padding:10px 12px; border-radius:12px; border:1px solid rgba(122,162,255,.2); margin:16px 0}
-    .controls input,.controls select{background:#0b1328; color:#e6f0ff; border:1px solid rgba(122,162,255,.2); border-radius:10px; padding:10px 12px}
-    .btn{display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid rgba(122,162,255,.25); background:#10172a; color:#e6f0ff; cursor:pointer}
-    .btn:hover{border-color:#7aa2ff}
   </style>
 </head>
 <body>
@@ -38,31 +30,16 @@
   </header>
 
   <main class="wrap">
-    <div class="controls">
-      <input id="q" placeholder="Buscar por título, conteúdo ou tag…" style="flex:1" />
-      <select id="kind">
-        <option value="all">Tudo</option>
-        <option value="post">Posts</option>
-        <option value="curiosidade">Curiosidades</option>
-      </select>
-      <select id="sort">
-        <option value="new">Mais recentes</option>
-        <option value="old">Mais antigos</option>
-      </select>
-    </div>
-    <div class="meta" id="stats" style="margin: -8px 0 8px"></div>
     <section id="posts">
       <h2>📝 Posts</h2>
       <div id="postsList" class="cards"></div>
       <div id="postsEmpty" class="empty" hidden>Sem posts ainda.</div>
-      <div style="text-align:center; margin-top:10px"><button id="morePosts" class="btn">Carregar mais posts</button></div>
     </section>
 
     <section id="curiosidades">
       <h2>💡 Curiosidades (DevOps/Tech/Dados/Sec)</h2>
       <div id="curiList" class="cards"></div>
       <div id="curiEmpty" class="empty" hidden>Nenhuma curiosidade publicada ainda.</div>
-      <div style="text-align:center; margin-top:10px"><button id="moreCuris" class="btn">Carregar mais curiosidades</button></div>
     </section>
   </main>
 
@@ -72,22 +49,18 @@
     </div>
   </footer>
 
+  <!-- Markdown renderer -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const OWNER = "alexandretho";
-    const REPO  = "deployment-site";
-    const PER_PAGE = 12; // por página
+    const REPO  = "deployman-site";
+    const PER_PAGE = 30;
 
-    // Estado
-    let pagePosts = 1, pageCuris = 1;
-    let allPosts = [], allCuris = [];
-
-    // Helpers
     const $ = (q)=>document.querySelector(q);
     const el = (tag,cls)=>{ const e=document.createElement(tag); if(cls) e.className=cls; return e };
     const fmtDate = (iso)=> new Date(iso).toLocaleDateString('pt-BR', {year:'numeric',month:'short',day:'2-digit'});
 
-    async function fetchIssuesPage(labels, page=1){
+    async function fetchIssuesByLabels(labels){
       const labList = Array.isArray(labels) ? labels : [labels];
       const seen = new Map();
       for(const lab of labList){
@@ -95,14 +68,12 @@
         url.searchParams.set('state','open');
         url.searchParams.set('labels', lab);
         url.searchParams.set('per_page', PER_PAGE);
-        url.searchParams.set('page', page);
         const res = await fetch(url);
         if(!res.ok) continue;
         const items = await res.json();
         for(const i of items){ if(i.pull_request) continue; seen.set(i.number, i); }
       }
-      // ordenar por created_at desc
-      return [...seen.values()].sort((a,b)=> new Date(b.created_at)-new Date(a.created_at));
+      return [...seen.values()];
     }
 
     function cardForIssue(i){
@@ -116,70 +87,28 @@
       return card;
     }
 
-    function renderList(container, emptyEl, items){
+    function renderList(container, emptyEl, issues){
       container.innerHTML = '';
-      if(!items.length){ emptyEl.hidden = false; return }
+      if(!issues.length){ emptyEl.hidden = false; return }
       emptyEl.hidden = true;
-      items.forEach(i => container.appendChild(cardForIssue(i)));
-    }
-
-    function applyFilters(){
-      const q = ($('#q')?.value || '').toLowerCase();
-      const kind = $('#kind')?.value || 'all';
-      const sort = $('#sort')?.value || 'new';
-
-      const filterFn = (i)=>{
-        if(kind !== 'all'){
-          const has = i.labels?.some(l => (typeof l==='string'?l:l.name).toLowerCase() === kind);
-          if(!has) return false;
-        }
-        const hay = [i.title||'', i.body||'', ...(i.labels||[]).map(l => (typeof l==='string'?l:l.name))].join(' ').toLowerCase();
-        return hay.includes(q);
-      };
-
-      const sortFn = (a,b)=> sort==='new' ? (new Date(b.created_at)-new Date(a.created_at)) : (new Date(a.created_at)-new Date(b.created_at));
-
-      const fPosts = allPosts.filter(filterFn).sort(sortFn);
-      const fCuris = allCuris.filter(filterFn).sort(sortFn);
-
-      renderList($('#postsList'), $('#postsEmpty'), fPosts);
-      renderList($('#curiList'), $('#curiEmpty'), fCuris);
-
-      $('#stats').textContent = `Posts carregados: ${allPosts.length} • Curiosidades carregadas: ${allCuris.length}`;
-    }
-
-    async function loadMorePosts(){
-      const page = pagePosts + 1; // próxima página
-      const batch = await fetchIssuesPage(['post','posts'], page);
-      pagePosts = page; allPosts = [...allPosts, ...batch];
-      applyFilters();
-    }
-
-    async function loadMoreCuris(){
-      const page = pageCuris + 1;
-      const batch = await fetchIssuesPage(['curiosidade','curiosidades'], page);
-      pageCuris = page; allCuris = [...allCuris, ...batch];
-      applyFilters();
+      issues.forEach(i => container.appendChild(cardForIssue(i)));
     }
 
     async function boot(){
-      $('#year').textContent = new Date().getFullYear();
-      // página inicial (page=1)
-      const [p1, c1] = await Promise.all([
-        fetchIssuesPage(['post','posts'], 1),
-        fetchIssuesPage(['curiosidade','curiosidades'], 1)
-      ]);
-      allPosts = p1; allCuris = c1;
-      applyFilters();
-
-      // eventos
-      $('#q').addEventListener('input', applyFilters);
-      $('#kind').addEventListener('change', applyFilters);
-      $('#sort').addEventListener('change', applyFilters);
-      $('#morePosts').addEventListener('click', loadMorePosts);
-      $('#moreCuris').addEventListener('click', loadMoreCuris);
+      document.getElementById('year').textContent = new Date().getFullYear();
+      try{
+        const [posts, curis] = await Promise.all([
+          fetchIssuesByLabels(['post','posts']),
+          fetchIssuesByLabels(['curiosidade','curiosidades'])
+        ]);
+        renderList($('#postsList'), $('#postsEmpty'), posts);
+        renderList($('#curiList'), $('#curiEmpty'), curis);
+      }catch(e){
+        console.error(e);
+        $('#postsEmpty').hidden = false;
+        $('#curiEmpty').hidden = false;
+      }
     }
-
     boot();
   </script>
 </body>
