@@ -13,9 +13,20 @@
     h2 { border-bottom: 1px solid rgba(122,162,255,.25); padding-bottom: 5px; }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; }
     .card { background: #10172a; padding: 16px; border-radius: 8px; border: 1px solid rgba(122,162,255,.15); }
+    .card h3 { margin: 0 0 8px; word-break: break-word; }
     .meta { font-size: 0.85rem; color: #a8b3cf; }
     .empty { opacity: .7; text-align: center; padding: 18px; }
-    .content { margin-top: 10px; }
+
+    /* ===== Ajustes para Markdown não "explodir" ===== */
+    .content { margin-top: 10px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+    .content img { max-width: 100%; height: auto; display: block; border-radius: 6px; }
+    .content h1, .content h2 { font-size: 1.15rem; margin: 12px 0 8px; }
+    .content h3 { font-size: 1.05rem; margin: 10px 0 6px; }
+    .content p, .content ul, .content ol { margin: 8px 0; }
+    .content blockquote { margin: 8px 0; padding-left: 10px; border-left: 3px solid rgba(122,162,255,.35); color: #c9d4f0; }
+
+    .content pre { max-width: 100%; overflow: auto; padding: 12px; background: #0b1328; border-radius: 8px; border: 1px solid rgba(122,162,255,.15); }
+    .content code { white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -52,6 +63,9 @@
   <!-- Markdown renderer -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
+    // Configurações do renderer Markdown
+    marked.setOptions({ gfm: true, breaks: true, mangle: false, headerIds: false });
+
     const OWNER = "alexandretho";
     const REPO  = "deployman-site";
     const PER_PAGE = 30;
@@ -59,6 +73,13 @@
     const $ = (q)=>document.querySelector(q);
     const el = (tag,cls)=>{ const e=document.createElement(tag); if(cls) e.className=cls; return e };
     const fmtDate = (iso)=> new Date(iso).toLocaleDateString('pt-BR', {year:'numeric',month:'short',day:'2-digit'});
+
+    // Remove front-matter YAML do início (--- ... ---)
+    function stripFrontMatter(s){
+      if(!s) return '';
+      const m = s.match(/^---\n[\s\S]*?\n---\n?/);
+      return m ? s.slice(m[0].length) : s;
+    }
 
     async function fetchIssuesByLabels(labels){
       const labList = Array.isArray(labels) ? labels : [labels];
@@ -81,8 +102,8 @@
       const h = el('h3'); h.textContent = i.title || 'Sem título';
       const meta = el('div','meta'); meta.textContent = `${fmtDate(i.created_at)} • #${i.number}`;
       const content = el('div','content');
-      content.innerHTML = marked.parse(i.body || '');
-      const more = el('a'); more.href = i.html_url; more.target='_blank'; more.rel='noopener'; more.textContent = 'Ler no GitHub';
+      content.innerHTML = marked.parse(stripFrontMatter(i.body || ''));
+      const more = el('a'); more.href = i.html_url; more.target = '_blank'; more.rel = 'noopener'; more.textContent = 'Ler no GitHub';
       card.append(h, meta, content, more);
       return card;
     }
