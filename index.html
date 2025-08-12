@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deployman • Tech/DevOps/Dados</title>
+  <meta name="description" content="Publicações e curiosidades sobre DevOps, tecnologia, dados e segurança." />
+  <meta name="color-scheme" content="dark light">
+  <link rel="preconnect" href="https://api.github.com" crossorigin>
+  <style>
+    :root{
+      --bg: #0a0f1f; /* azul escuro futurista */
+      --card: #10172a;
+      --muted: #7aa2ff;
+      --accent: #00e5ff;
+      --text: #e6f0ff;
+      --text-dim: #a8b3cf;
+      --ring: 0 0 0 2px rgba(0,229,255,.35), 0 0 40px rgba(0,229,255,.15) inset;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 80% -10%, rgba(0,229,255,.18), transparent 60%),
+                  radial-gradient(900px 500px at 10% 110%, rgba(96,165,250,.15), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      letter-spacing:.2px;
+    }
+    a{color:var(--muted); text-decoration: none}
+    a:hover{color:var(--accent)}
+    header{
+      position: sticky; top:0; z-index:5;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(10,15,31,.85), rgba(10,15,31,.55));
+      border-bottom: 1px solid rgba(122,162,255,.15);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding: 0 20px}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
+    .nav .brand{display:flex; gap:10px; align-items:center; font-weight:700}
+    .logo{width:28px; height:28px; border-radius:8px; background: linear-gradient(135deg,var(--muted),var(--accent)); box-shadow: 0 0 20px rgba(122,162,255,.5)}
+    .nav a{margin:0 10px; font-weight:600}
+
+    .hero{padding:72px 0 32px; display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:center}
+    .hero h1{font-size: clamp(1.8rem, 3.5vw, 3rem); line-height:1.15; margin:0}
+    .hero p{color:var(--text-dim); margin:14px 0 22px}
+    .cta{display:flex; gap:12px; flex-wrap:wrap}
+    .btn{display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:14px; border:1px solid rgba(122,162,255,.25); color:var(--text); font-weight:700; background: linear-gradient(180deg, rgba(16,23,42,.7), rgba(16,23,42,.4)); box-shadow: var(--ring)}
+    .btn.secondary{background: transparent; border-color: rgba(122,162,255,.25); box-shadow:none}
+
+    .panel{background: linear-gradient(180deg, rgba(16,23,42,.75), rgba(16,23,42,.5)); border:1px solid rgba(122,162,255,.15); border-radius:18px; padding:16px; box-shadow: 0 10px 60px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03)}
+    .grid{display:grid; gap:16px}
+    .cards{grid-template-columns: repeat(auto-fit, minmax(260px,1fr))}
+
+    .card{background: var(--card); border-radius:16px; padding:16px; border:1px solid rgba(122,162,255,.12); position:relative; overflow:hidden}
+    .card h3{margin:0 0 8px; font-size:1.05rem}
+    .meta{color:var(--text-dim); font-size:.9rem}
+
+    .searchbar{display:flex; gap:10px; align-items:center; background: #0b1328; padding:10px 12px; border-radius:12px; border:1px solid rgba(122,162,255,.2)}
+    input, select, textarea{background:#0b1328; color:var(--text); border:1px solid rgba(122,162,255,.2); border-radius:12px; padding:10px 12px; width:100%}
+
+    section{padding:32px 0}
+    h2{margin:0 0 12px}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background: rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.2); color: var(--accent); font-size:.85rem; font-weight:700}
+
+    footer{padding:28px 0 60px; color:var(--text-dim); border-top:1px solid rgba(122,162,255,.15)}
+
+    .empty{opacity:.7; text-align:center; padding:18px}
+    .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0)}
+
+    @media (max-width: 880px){
+      .hero{grid-template-columns: 1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="logo" aria-hidden></div> <span>Deployman</span></div>
+      <nav>
+        <a href="#posts">Posts</a>
+        <a href="#curiosidades">Curiosidades</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>DevOps • Tecnologia • Dados • Sec</h1>
+        <p>Um hub minimalista para compartilhar <strong>posts</strong>, <strong>curiosidades</strong> e práticas reais de plataformas cloud, Kubernetes/OKD, observabilidade, automação e segurança — com publicação automática via <span class="pill">GitHub Issues → site</span>.</p>
+        <div class="cta">
+          <a id="newPostBtn" class="btn" target="_blank" rel="noopener">✍️ Publicar um post</a>
+          <a id="newCuriBtn" class="btn secondary" target="_blank" rel="noopener">✨ Registrar curiosidade</a>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="searchbar">
+          <label for="q" class="sr">Buscar</label>
+          <input id="q" placeholder="Buscar por título, tag ou conteúdo…" />
+          <select id="kind">
+            <option value="all">Tudo</option>
+            <option value="post">Posts</option>
+            <option value="curiosidade">Curiosidades</option>
+          </select>
+        </div>
+        <div id="stats" class="meta" style="margin:10px 2px 0"></div>
+      </div>
+    </section>
+
+    <section id="posts">
+      <h2>📝 Posts</h2>
+      <div id="postsList" class="grid cards"></div>
+      <div id="postsEmpty" class="empty" hidden>Sem posts ainda. Clique em “Publicar um post”.</div>
+    </section>
+
+    <section id="curiosidades">
+      <h2>💡 Curiosidades (DevOps/Tech/Dados/Sec)</h2>
+      <div id="curiList" class="grid cards"></div>
+      <div id="curiEmpty" class="empty" hidden>Nenhuma curiosidade publicada ainda. Experimente “Registrar curiosidade”.</div>
+    </section>
+
+    <section id="sobre">
+      <h2>👤 Sobre mim</h2>
+      <div class="panel">
+        <p><strong>Alexandre Santos</strong> — DevOps, Kubernetes (OKD4, Rancher), AWS, observabilidade (Dynatrace, Grafana), automação (Terraform, n8n) e segurança. Neste site compartilho experiências do dia a dia, guias práticos e notas rápidas.</p>
+        <ul>
+          <li>🎯 Foco: custo, escalabilidade e confiabilidade.</li>
+          <li>⚙️ Stack que curto: PHP/Node, Postgres/MySQL, Redis, Traefik/Nginx, Keycloak.</li>
+          <li>📚 Extras que agregam: mini-playbooks, checklists e “lab recipes”.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contato">
+      <h2>✉️ Contato</h2>
+      <div class="panel">
+        <p>Prefere falar direto? <a id="mailto" href="mailto:seuemail@exemplo.com?subject=Contato%20via%20Deployman">Enviar e-mail</a>. Ou abra um “issue” de contato:</p>
+        <div class="cta">
+          <a id="newContactBtn" class="btn secondary" target="_blank" rel="noopener">Abrir contato via Issues</a>
+        </div>
+        <p class="meta">Dica: você pode hospedar esse site no GitHub Pages e usar Issues como CMS. Sem servidores, sem backend.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="meta">© <span id="year"></span> Deployman • Feito com ♥ e GitHub Pages. | <a id="repoLink" target="_blank" rel="noopener">Repositório</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // ---------- CONFIG ----------
+    // Defina aqui seu usuário e repositório onde o site estará hospedado (ex.: owner: "alexandre", repo: "deployman-site")
+    const OWNER = "alexandrealexandretho"; // <- edite
+    const REPO  = "deployman-site"; // <- edite
+    const PER_PAGE = 30; // itens por chamada
+    const SITE_EMAIL = "seuemail@exemplo.com"; // contato padrão
+
+    // ---------- Helpers ----------
+    const $ = (q)=>document.querySelector(q);
+    const el = (tag,cls)=>{ const e=document.createElement(tag); if(cls) e.className=cls; return e };
+    const fmtDate = (iso)=> new Date(iso).toLocaleDateString('pt-BR', {year:'numeric',month:'short',day:'2-digit'});
+
+    function issueUrlTemplate(params){
+      const u = new URL(`https://github.com/${OWNER}/${REPO}/issues/new`);
+      Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v));
+      return u.toString();
+    }
+
+    function buildNewIssueLinks(){
+      const pBody = encodeURIComponent([`# Título`,`` ,`## Conteúdo`,`Escreva em Markdown.`,`` ,`## Tags`,`devops, kubernetes, aws`,`` ,`## Links úteis`,`- `].join('\n'));
+      const cBody = encodeURIComponent([`## Curiosidade`,`Texto curto, link e/ou referência.`,`` ,`## Tags`,`curiosidade, devops, dados`].join('\n'));
+      const contactBody = encodeURIComponent([`## Assunto`,``,`` ,`## Mensagem`,``].join('\n'));
+
+      const newPost = issueUrlTemplate({
+        title: "Novo post: ",
+        labels: "post,publicar",
+        body: pBody
+      });
+      const newCuri = issueUrlTemplate({
+        title: "Curiosidade: ",
+        labels: "curiosidade,publicar",
+        body: cBody
+      });
+      const newContact = issueUrlTemplate({
+        title: "Contato via site",
+        labels: "contato",
+        body: contactBody
+      });
+
+      $("#newPostBtn").href = newPost;
+      $("#newCuriBtn").href = newCuri;
+      $("#newContactBtn").href = newContact;
+      $("#repoLink").href = `https://github.com/${OWNER}/${REPO}`;
+      $("#mailto").href = `mailto:${SITE_EMAIL}?subject=Contato%20via%20Deployman`;
+    }
+
+    async function fetchIssuesByLabel(label){
+      const url = new URL(`https://api.github.com/repos/${OWNER}/${REPO}/issues`);
+      url.searchParams.set('state','open');
+      url.searchParams.set('labels', label);
+      url.searchParams.set('per_page', PER_PAGE);
+      const res = await fetch(url, {headers: {"Accept":"application/vnd.github+json"}});
+      if(!res.ok) throw new Error('Falha ao buscar issues: '+res.status);
+      const items = await res.json();
+      // Apenas "issues" (não PRs)
+      return items.filter(i => !i.pull_request);
+    }
+
+    function cardForIssue(i){
+      const card = el('article','card');
+      const h = el('h3'); h.textContent = i.title.replace(/^\[.*?\]\s*/,'');
+      const meta = el('div','meta');
+      const tags = (i.labels||[]).map(l => typeof l === 'string' ? l : l.name).join(', ');
+      meta.textContent = `${fmtDate(i.created_at)} • #${i.number} • ${tags}`;
+      const p = el('p'); p.innerHTML = (i.body || '').slice(0, 220).replace(/\n/g,' ') + (i.body && i.body.length>220?'…':'');
+      const more = el('a'); more.href = i.html_url; more.target='_blank'; more.rel='noopener'; more.textContent = 'Ler no GitHub';
+      card.append(h, meta, p, more);
+      return card;
+    }
+
+    function renderList(container, emptyEl, issues){
+      container.innerHTML = '';
+      if(!issues.length){ emptyEl.hidden = false; return }
+      emptyEl.hidden = true;
+      issues.forEach(i => container.appendChild(cardForIssue(i)));
+    }
+
+    function searchAll(){
+      const q = ($('#q').value || '').toLowerCase();
+      const kind = $('#kind').value;
+      const match = (i)=>{
+        if(kind !== 'all' && !i.labels?.some(l => (typeof l==='string'?l:l.name).toLowerCase() === kind)) return false;
+        const hay = [i.title, i.body, ...(i.labels||[]).map(l => (typeof l==='string'?l:l.name))].join(' ').toLowerCase();
+        return hay.includes(q);
+      };
+      renderList($('#postsList'), $('#postsEmpty'), window.__posts.filter(match));
+      renderList($('#curiList'), $('#curiEmpty'), window.__curis.filter(match));
+      $('#stats').textContent = `Posts: ${window.__posts.length} • Curiosidades: ${window.__curis.length}`;
+    }
+
+    async function boot(){
+      document.getElementById('year').textContent = new Date().getFullYear();
+      buildNewIssueLinks();
+      try{
+        const [posts, curis] = await Promise.all([
+          fetchIssuesByLabel('post'),
+          fetchIssuesByLabel('curiosidade')
+        ]);
+        window.__posts = posts;
+        window.__curis = curis;
+        searchAll();
+      }catch(e){
+        console.error(e);
+        $('#stats').textContent = 'Falha ao carregar conteúdo. Verifique OWNER/REPO e se há issues abertas.';
+        $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
+      }
+      $('#q').addEventListener('input', searchAll);
+      $('#kind').addEventListener('change', searchAll);
+    }
+    boot();
+  </script>
+</body>
+</html>
