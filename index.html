@@ -5,23 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deployman • Tech/DevOps/Dados</title>
   <meta name="description" content="Publicações e curiosidades sobre DevOps, tecnologia, dados e segurança." />
+  <meta name="color-scheme" content="dark light">
   <style>
-    body { background-color: #0a0f1f; color: #e6f0ff; font-family: Arial, sans-serif; margin: 0; }
-    header, footer { background-color: #10172a; padding: 10px 20px; }
-    nav a { color: #7aa2ff; margin: 0 10px; text-decoration: none; }
-    nav a:hover { color: #00e5ff; }
-    .wrap { max-width: 1100px; margin: auto; padding: 20px; }
-    h2 { border-bottom: 1px solid rgba(122,162,255,.25); padding-bottom: 5px; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; }
-    .card { background: #10172a; padding: 16px; border-radius: 8px; border: 1px solid rgba(122,162,255,.15); }
-    .meta { font-size: 0.85rem; color: #a8b3cf; }
-    .empty { opacity: .7; text-align: center; padding: 18px; }
+    :root{
+      --bg: #0a0f1f;
+      --card: #10172a;
+      --muted: #7aa2ff;
+      --accent: #00e5ff;
+      --text: #e6f0ff;
+      --text-dim: #a8b3cf;
+      --ring: 0 0 0 2px rgba(0,229,255,.35), 0 0 40px rgba(0,229,255,.15) inset;
+    }
+    *{box-sizing:border-box; margin:0; padding:0}
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial;
+      background: radial-gradient(1200px 600px at 80% -10%, rgba(0,229,255,.18), transparent 60%),
+                  radial-gradient(900px 500px at 10% 110%, rgba(96,165,250,.15), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    a{color:var(--muted); text-decoration:none}
+    a:hover{color:var(--accent)}
+    header{
+      position: sticky; top:0; z-index:5;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(10,15,31,.85), rgba(10,15,31,.55));
+      border-bottom: 1px solid rgba(122,162,255,.15);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding: 0 20px}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
+    .nav .brand{display:flex; gap:10px; align-items:center; font-weight:700}
+    .logo{width:28px; height:28px; border-radius:8px; background: linear-gradient(135deg,var(--muted),var(--accent)); box-shadow: 0 0 20px rgba(122,162,255,.5)}
+    .nav a{margin:0 10px; font-weight:600}
+    .hero{padding:72px 0 32px; text-align:center}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background: rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.2); color: var(--accent); font-size:.85rem; font-weight:700}
+    .grid{display:grid; gap:16px}
+    .cards{grid-template-columns: repeat(auto-fit, minmax(260px,1fr))}
+    .card{background: var(--card); border-radius:16px; padding:16px; border:1px solid rgba(122,162,255,.12); position:relative; overflow:hidden}
+    .card h3{margin:0 0 8px; font-size:1.05rem}
+    .meta{color:var(--text-dim); font-size:.9rem}
+    section{padding:32px 0}
+    footer{padding:28px 0 60px; color:var(--text-dim); border-top:1px solid rgba(122,162,255,.15); text-align:center}
+    .empty{opacity:.7; text-align:center; padding:18px}
   </style>
 </head>
 <body>
   <header>
-    <div class="wrap">
-      <h1>Deployman</h1>
+    <div class="wrap nav">
+      <div class="brand"><div class="logo"></div> Deployman</div>
       <nav>
         <a href="#posts">Posts</a>
         <a href="#curiosidades">Curiosidades</a>
@@ -32,26 +64,35 @@
   </header>
 
   <main class="wrap">
+    <section class="hero">
+      <h1>DevOps • Tecnologia • Dados • Sec</h1>
+      <div class="pill">Publicação: apenas pelo mantenedor</div>
+    </section>
+
     <section id="posts">
       <h2>📝 Posts</h2>
-      <div id="postsList" class="cards"></div>
+      <div id="postsList" class="grid cards"></div>
       <div id="postsEmpty" class="empty" hidden>Sem posts ainda.</div>
     </section>
 
     <section id="curiosidades">
       <h2>💡 Curiosidades</h2>
-      <div id="curiList" class="cards"></div>
+      <div id="curiList" class="grid cards"></div>
       <div id="curiEmpty" class="empty" hidden>Nenhuma curiosidade publicada ainda.</div>
     </section>
 
     <section id="sobre">
       <h2>👤 Sobre mim</h2>
-      <p><strong>Alexandre Santos</strong> — DevOps, Kubernetes, AWS, observabilidade, automação e segurança. Compartilhando experiências, guias e notas rápidas.</p>
+      <div class="card">
+        <p><strong>Alexandre Santos</strong> — DevOps, Kubernetes (OKD4, Rancher), AWS, observabilidade, automação e segurança. Compartilho experiências, guias práticos e notas rápidas.</p>
+      </div>
     </section>
 
     <section id="contato">
       <h2>✉️ Contato</h2>
-      <p>Prefere falar direto? <a id="mailto" href="mailto:seuemail@exemplo.com?subject=Contato%20via%20Deployman">Enviar e-mail</a>.</p>
+      <div class="card">
+        <p>Prefere falar direto? <a id="mailto" href="mailto:seuemail@exemplo.com?subject=Contato%20via%20Deployman">Enviar e-mail</a>.</p>
+      </div>
     </section>
   </main>
 
@@ -62,8 +103,8 @@
   </footer>
 
   <script>
-    const OWNER = "alexandretho"; // seu usuário
-    const REPO  = "deployman-site"; // seu repositório
+    const OWNER = "alexandretho";
+    const REPO  = "deployman-site";
     const PER_PAGE = 30;
 
     const $ = (q)=>document.querySelector(q);
@@ -79,10 +120,7 @@
         url.searchParams.set('labels', lab);
         url.searchParams.set('per_page', PER_PAGE);
         const res = await fetch(url, {headers: {"Accept":"application/vnd.github+json"}});
-        if(!res.ok) {
-          console.error(`Erro ao buscar label ${lab}:`, res.status);
-          continue;
-        }
+        if(!res.ok) { console.error(`Erro ao buscar label ${lab}:`, res.status); continue; }
         const items = await res.json();
         for(const i of items){ if(i.pull_request) continue; seen.set(i.number, i); }
       }
@@ -110,19 +148,25 @@
 
     async function boot(){
       document.getElementById('year').textContent = new Date().getFullYear();
+      const mail = document.getElementById('mailto');
+      if(mail) mail.href = `mailto:${SITE_EMAIL}?subject=Contato%20via%20Deployman`;
+      const repoA = document.getElementById('repoLink');
+      if(repoA) repoA.href = `https://github.com/${OWNER}/${REPO}`;
       try{
         const [posts, curis] = await Promise.all([
           fetchIssuesByLabel(['post','posts']),
           fetchIssuesByLabel(['curiosidade','curiosidades'])
         ]);
-        renderList($('#postsList'), $('#postsEmpty'), posts);
-        renderList($('#curiList'), $('#curiEmpty'), curis);
+        window.__posts = posts;
+        window.__curis = curis;
+        searchAll();
       }catch(e){
         console.error('Erro no boot:', e);
-        $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
+        document.querySelector('#postsEmpty').hidden = false; document.querySelector('#curiEmpty').hidden = false;
       }
+      document.querySelector('#q')?.addEventListener('input', searchAll);
+      document.querySelector('#kind')?.addEventListener('change', searchAll);
     }
-
     boot();
   </script>
 </body>
