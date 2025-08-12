@@ -200,8 +200,31 @@
       $("#mailto").href = `mailto:${SITE_EMAIL}?subject=Contato%20via%20Deployman`;
     }
 
-    async function fetchIssuesByLabel(label){
-      const url = new URL(`https://api.github.com/repos/${OWNER}/${REPO}/issues`);
+    async function fetchIssuesByLabel(labels){
+      // labels: string | string[] (aceita variações como "curiosidade" e "curiosidades")
+      const labList = Array.isArray(labels) ? labels : [labels];
+      const seen = new Map();
+      for(const lab of labList){
+        const url = new URL(`https://api.github.com/repos/${OWNER}/${REPO}/issues`);
+        url.searchParams.set('state','open');
+        // Dica: a API trata múltiplas labels como AND; por isso buscamos 1 a 1 e mesclamos
+        url.searchParams.set('labels', lab);
+        url.searchParams.set('per_page', PER_PAGE);
+        console.log('[GH-ISSUES]', url.toString());
+        const res = await fetch(url, {headers: {"Accept":"application/vnd.github+json"}});
+        if(!res.ok){
+          const msg = `Falha ao buscar issues (label: ${lab}) — status ${res.status}`;
+          console.error(msg);
+          throw new Error(msg);
+        }
+        const items = await res.json();
+        for(const i of items){
+          if(i.pull_request) continue; // ignora PRs
+          seen.set(i.number, i);
+        }
+      }
+      return [...seen.values()];
+    }/${REPO}/issues`);
       url.searchParams.set('state','open');
       url.searchParams.set('labels', label);
       url.searchParams.set('per_page', PER_PAGE);
@@ -249,13 +272,26 @@
       buildNewIssueLinks();
       try{
         const [posts, curis] = await Promise.all([
-          fetchIssuesByLabel('post'),
-          fetchIssuesByLabel('curiosidade')
+          fetchIssuesByLabel(['post','posts']),
+          fetchIssuesByLabel(['curiosidade','curiosidades'])
         ]);
         window.__posts = posts;
         window.__curis = curis;
         searchAll();
+        if(!posts.length && !curis.length){
+          $('#stats').innerHTML = `Nenhum item encontrado. Verifique:<br>• OWNER/REPO corretos<br>• Repositório <strong>público</strong> (ou use token/Action para JSON)<br>• Issues <strong>abertas</strong> com labels exatas (post/curiosidade)`;
+          $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
+        }
       }catch(e){
+        console.error(e);
+        const tip = `Não carregou. Teste este endpoint no seu navegador (troque OWNER/REPO):<br>`+
+          `<code>https://api.github.com/repos/${OWNER}/${REPO}/issues?state=open&labels=curiosidade&per_page=10</code>`;
+        $('#stats').innerHTML = tip;
+        $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
+      }
+      $('#q').addEventListener('input', searchAll);
+      $('#kind').addEventListener('change', searchAll);
+    }catch(e){
         console.error(e);
         $('#stats').textContent = 'Falha ao carregar conteúdo. Verifique OWNER/REPO e se há issues abertas.';
         $('#postsEmpty').hidden = false; $('#curiEmpty').hidden = false;
